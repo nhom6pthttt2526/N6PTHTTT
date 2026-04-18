@@ -134,11 +134,8 @@
 
             <!-- Filter & Search (Products Section) -->
             <div id="products-section" class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                <div class="flex space-x-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide flex-grow">
-                    <button type="button" onclick="app.setCategory('Tất cả')" class="filter-btn active px-5 py-2 rounded-full font-semibold transition shadow-sm bg-organic-600 text-white whitespace-nowrap" data-cat="Tất cả">Tất cả</button>
-                    <button type="button" onclick="app.setCategory('Rau củ')" class="filter-btn px-5 py-2 rounded-full font-semibold transition shadow-sm bg-white text-gray-600 hover:bg-gray-100 border border-gray-200 whitespace-nowrap" data-cat="Rau củ">Rau củ</button>
-                    <button type="button" onclick="app.setCategory('Trái cây')" class="filter-btn px-5 py-2 rounded-full font-semibold transition shadow-sm bg-white text-gray-600 hover:bg-gray-100 border border-gray-200 whitespace-nowrap" data-cat="Trái cây">Trái cây</button>
-                    <button type="button" onclick="app.setCategory('Thịt trứng')" class="filter-btn px-5 py-2 rounded-full font-semibold transition shadow-sm bg-white text-gray-600 hover:bg-gray-100 border border-gray-200 whitespace-nowrap" data-cat="Thịt trứng">Thịt, Trứng</button>
+                <div id="ui-home-categories" class="flex space-x-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide flex-grow">
+                    <!-- Rendered by JavaScript dynamically -->
                 </div>
                 <!-- Thanh tìm kiếm -->
                 <div class="relative w-full md:w-72 flex-shrink-0">
@@ -526,11 +523,14 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Danh mục *</label>
-                        <select id="selProdCat" class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-organic-500">
-                            <option value="Rau củ">Rau củ</option>
-                            <option value="Trái cây">Trái cây</option>
-                            <option value="Thịt trứng">Thịt, Trứng</option>
-                        </select>
+                        <div class="flex gap-2">
+                            <select id="selProdCat" class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-organic-500">
+                                <!-- Rendered dynamically -->
+                            </select>
+                            <button type="button" onclick="app.addNewCategory()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 rounded-lg font-bold transition border border-gray-300 flex items-center justify-center" title="Thêm danh mục mới">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Giá bán (VNĐ) *</label>
@@ -606,6 +606,24 @@
         </div>
     </div>
 
+    <!-- MODAL: THÊM DANH MỤC MỚI -->
+    <div id="modal-category" class="fixed inset-0 bg-black/60 z-[10001] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm flex flex-col shadow-2xl overflow-hidden">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <h3 class="text-lg font-bold text-gray-800">Thêm Danh mục mới</h3>
+                <button type="button" onclick="app.closeCategoryModal()" class="text-gray-400 hover:text-gray-600 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Tên danh mục</label>
+                <input type="text" id="txtNewCategory" onkeydown="if(event.key === 'Enter') app.confirmAddCategory()" class="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-organic-500" placeholder="VD: Đồ khô, Gia vị...">
+            </div>
+            <div class="p-5 border-t border-gray-100 flex justify-end space-x-3 bg-gray-50/50">
+                <button type="button" onclick="app.closeCategoryModal()" class="px-4 py-2 rounded-lg font-bold text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 transition">Hủy</button>
+                <button type="button" onclick="app.confirmAddCategory()" class="px-4 py-2 rounded-lg font-bold text-white bg-organic-600 hover:bg-organic-700 transition shadow-md">Lưu</button>
+            </div>
+        </div>
+    </div>
+
     <!-- JAVASCRIPT APP LOGIC -->
     <script>
         // --- 1. DỮ LIỆU GIẢ LẬP ---
@@ -616,6 +634,7 @@
                 { username: 'khachhang', pass: '123', role: 'customer', name: 'Nguyễn Khách' },
                 { username: 'admin', pass: 'admin', role: 'admin', name: 'Quản Trị Viên' }
             ],
+            categories: ["Rau củ", "Trái cây", "Thịt trứng"], // Thêm mảng danh mục động
             products: [
                 { id: 1, name: "Cà rốt hữu cơ Đà Lạt (1kg)", category: "Rau củ", price: 30000, desc: "Cà rốt hữu cơ giòn ngọt tự nhiên, giàu vitamin A, an toàn cho sức khỏe.", fullDesc: "Cà rốt hữu cơ Đà Lạt được trồng tại vùng cao nguyên mát mẻ, không sử dụng hóa chất hay thuốc trừ sâu. Củ chắc, màu cam tươi, vị ngọt thanh và giòn tự nhiên. Giàu vitamin A, chất xơ và chất chống oxy hóa, giúp cải thiện thị lực và tăng cường sức khỏe. Phù hợp làm nước ép, salad hoặc chế biến món ăn hàng ngày.", img: "https://images.pexels.com/photos/143133/pexels-photo-143133.jpeg?auto=compress&cs=tinysrgb&w=500", stock: 50, hidden: false },
                 { id: 2, name: "Cà chua Cherry hữu cơ (1kg)", category: "Rau củ", price: 45000, desc: "Cà chua bi hữu cơ mọng nước, vị ngọt thanh, giàu lycopene.", fullDesc: "Cà chua Cherry hữu cơ được trồng trong nhà màng sinh thái, không thuốc trừ sâu. Quả nhỏ, đỏ tươi, vỏ mỏng, mọng nước với vị ngọt pha chút chua nhẹ. Giàu lycopene giúp chống oxy hóa và làm đẹp da. Thích hợp ăn sống, làm salad hoặc ăn kèm bữa chính.", img: "https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?auto=compress&cs=tinysrgb&w=500", stock: 30, hidden: false },
@@ -657,7 +676,8 @@
                 const localCart = localStorage.getItem('ecoMart_cart');
                 const localOrders = localStorage.getItem('ecoMart_orders');
                 const localUsers = localStorage.getItem('ecoMart_users');
-                const localProducts = localStorage.getItem('ecoMart_products'); // Đã bật lại
+                const localProducts = localStorage.getItem('ecoMart_products');
+                const localCategories = localStorage.getItem('ecoMart_categories');
 
                 if (localUser) app.state.user = JSON.parse(localUser);
                 if (localCart) app.state.cart = JSON.parse(localCart);
@@ -670,7 +690,12 @@
                 
                 if (localProducts) {
                     const parsedProducts = JSON.parse(localProducts);
-                    DB.products = parsedProducts; // Khôi phục lại sản phẩm từ bộ nhớ
+                    DB.products = parsedProducts;
+                }
+
+                if (localCategories) {
+                    const parsedCats = JSON.parse(localCategories);
+                    if(parsedCats.length >= DB.categories.length) DB.categories = parsedCats;
                 }
             },
 
@@ -680,6 +705,7 @@
                 localStorage.setItem('ecoMart_orders', JSON.stringify(app.state.orders));
                 localStorage.setItem('ecoMart_users', JSON.stringify(DB.users));
                 localStorage.setItem('ecoMart_products', JSON.stringify(DB.products));
+                localStorage.setItem('ecoMart_categories', JSON.stringify(DB.categories));
             },
 
             formatMoney: (num) => num.toLocaleString('vi-VN') + ' đ',
@@ -854,14 +880,22 @@
             // --- TÌM KIẾM & LỌC SẢN PHẨM ---
             setCategory: (cat) => {
                 app.state.category = cat;
-                document.querySelectorAll('.filter-btn').forEach(btn => {
-                    if (btn.dataset.cat === cat) {
-                        btn.className = "filter-btn px-5 py-2 rounded-full font-semibold transition shadow-sm bg-organic-600 text-white whitespace-nowrap";
-                    } else {
-                        btn.className = "filter-btn px-5 py-2 rounded-full font-semibold transition shadow-sm bg-white text-gray-600 hover:bg-gray-100 border border-gray-200 whitespace-nowrap";
-                    }
-                });
+                app.renderCategoryFilters(); // Re-render để đổi màu nút active
                 app.renderProducts();
+            },
+
+            renderCategoryFilters: () => {
+                const container = document.getElementById('ui-home-categories');
+                if(!container) return;
+                
+                let html = `<button type="button" onclick="app.setCategory('Tất cả')" class="filter-btn px-5 py-2 rounded-full font-semibold transition shadow-sm ${app.state.category === 'Tất cả' ? 'bg-organic-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'} whitespace-nowrap">Tất cả</button>`;
+                
+                DB.categories.forEach(cat => {
+                    const isActive = app.state.category === cat;
+                    html += `<button type="button" onclick="app.setCategory('${cat}')" class="filter-btn px-5 py-2 rounded-full font-semibold transition shadow-sm ${isActive ? 'bg-organic-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'} whitespace-nowrap">${cat}</button>`;
+                });
+                
+                container.innerHTML = html;
             },
 
             searchProducts: (keyword) => {
@@ -1457,6 +1491,8 @@
                 const modal = document.getElementById('modal-product');
                 document.getElementById('modal-product-title').innerText = id ? 'Cập nhật Sản phẩm' : 'Thêm Sản phẩm mới';
                 
+                app.renderCategoryDropdown(); // Hiển thị danh mục ra dropdown
+
                 if(id) {
                     const p = DB.products.find(x => x.id === id);
                     document.getElementById('txtProdId').value = p.id;
@@ -1471,7 +1507,7 @@
                     // Reset form
                     document.getElementById('txtProdId').value = '';
                     document.getElementById('txtProdName').value = '';
-                    document.getElementById('selProdCat').value = 'Rau củ';
+                    if (DB.categories.length > 0) document.getElementById('selProdCat').value = DB.categories[0];
                     document.getElementById('txtProdPrice').value = '';
                     document.getElementById('txtProdStock').value = '';
                     document.getElementById('txtProdImg').value = '';
@@ -1481,6 +1517,48 @@
 
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
+            },
+
+            renderCategoryDropdown: () => {
+                const sel = document.getElementById('selProdCat');
+                if (!sel) return;
+                sel.innerHTML = DB.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+            },
+
+            addNewCategory: () => {
+                document.getElementById('txtNewCategory').value = '';
+                const modal = document.getElementById('modal-category');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => document.getElementById('txtNewCategory').focus(), 100);
+            },
+
+            closeCategoryModal: () => {
+                const modal = document.getElementById('modal-category');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            },
+
+            confirmAddCategory: () => {
+                const newCat = document.getElementById('txtNewCategory').value;
+                if (newCat && newCat.trim() !== '') {
+                    const catName = newCat.trim();
+                    if (DB.categories.includes(catName)) {
+                        app.toast("Danh mục này đã tồn tại!", "error");
+                    } else {
+                        DB.categories.push(catName);
+                        app.syncStorage(); // Lưu vào bộ nhớ máy tính
+                        app.renderCategoryFilters(); // Cập nhật nút bấm ngoài trang chủ
+                        app.renderCategoryDropdown(); // Cập nhật menu xổ xuống
+                        
+                        document.getElementById('selProdCat').value = catName; // Tự động chọn danh mục vừa tạo
+                        app.toast(`Đã thêm danh mục mới: ${catName}`);
+                        lucide.createIcons();
+                        app.closeCategoryModal();
+                    }
+                } else {
+                    app.toast("Vui lòng nhập tên danh mục!", "error");
+                }
             },
 
             closeProductModal: () => {
@@ -1613,6 +1691,7 @@
         window.onload = () => {
             lucide.createIcons();
             app.loadStorage(); // Nạp dữ liệu từ LocalStorage khi mới vào web
+            app.renderCategoryFilters(); // Khởi tạo nút bấm danh mục trang chủ
             app.updateNavUI();
             app.updateCartBadge(); // Hiển thị số lượng giỏ hàng
             
