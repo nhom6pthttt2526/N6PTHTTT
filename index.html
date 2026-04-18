@@ -657,9 +657,7 @@
                 const localCart = localStorage.getItem('ecoMart_cart');
                 const localOrders = localStorage.getItem('ecoMart_orders');
                 const localUsers = localStorage.getItem('ecoMart_users');
-
-                // Tạm thời vô hiệu hóa load localProducts để ép hệ thống nhận tên sản phẩm mới
-                // const localProducts = localStorage.getItem('ecoMart_products');
+                const localProducts = localStorage.getItem('ecoMart_products'); // Đã bật lại
 
                 if (localUser) app.state.user = JSON.parse(localUser);
                 if (localCart) app.state.cart = JSON.parse(localCart);
@@ -668,6 +666,11 @@
                 if (localUsers) {
                     const parsedUsers = JSON.parse(localUsers);
                     if(parsedUsers.length >= DB.users.length) DB.users = parsedUsers;
+                }
+                
+                if (localProducts) {
+                    const parsedProducts = JSON.parse(localProducts);
+                    DB.products = parsedProducts; // Khôi phục lại sản phẩm từ bộ nhớ
                 }
             },
 
